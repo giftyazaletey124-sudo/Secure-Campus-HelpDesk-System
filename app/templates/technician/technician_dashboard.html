@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technician Dashboard | Secure Campus HelpDesk</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #243247;
+        }
+
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #142b49;
+            color: white;
+            padding: 30px 20px;
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 14px 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #245b91;
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 35px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            color: #142b49;
+        }
+
+        .header p {
+            margin-top: 8px;
+            color: #6b7788;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: white;
+            padding: 23px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card p {
+            color: #6b7788;
+            margin-bottom: 12px;
+        }
+
+        .card h2 {
+            font-size: 30px;
+            color: #142b49;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            color: #142b49;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th,
+        td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8edf3;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f4f7fb;
+            color: #34445a;
+        }
+
+        select {
+            padding: 9px;
+            border: 1px solid #ccd5df;
+            border-radius: 5px;
+            background: white;
+        }
+
+        button {
+            padding: 9px 14px;
+            background: #1769aa;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        button:hover {
+            background: #104c7e;
+        }
+
+        .flash {
+            background: #e4f5e9;
+            color: #176b35;
+            padding: 13px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #718096;
+        }
+
+        .logout {
+            margin-top: 35px;
+        }
+
+        @media (max-width: 1000px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <h2>Secure Campus<br>HelpDesk</h2>
+
+        <a href="{{ url_for('main.technician_dashboard') }}" class="active">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('main.technician_dashboard') }}">
+            Support Tickets
+        </a>
+
+        <a href="{{ url_for('main.logout') }}" class="logout">
+            Logout
+        </a>
+    </aside>
+
+    <main class="main">
+
+        <div class="header">
+            <div>
+                <h1>Technician Dashboard</h1>
+                <p>Welcome, {{ session.get('full_name', 'Technician') }}!</p>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="cards">
+
+            <div class="card">
+                <p>Total Tickets</p>
+                <h2>{{ total_tickets }}</h2>
+            </div>
+
+            <div class="card">
+                <p>Pending Tickets</p>
+                <h2>{{ pending_tickets }}</h2>
+            </div>
+
+            <div class="card">
+                <p>In Progress</p>
+                <h2>{{ in_progress_tickets }}</h2>
+            </div>
+
+            <div class="card">
+                <p>Resolved Tickets</p>
+                <h2>{{ resolved_tickets }}</h2>
+            </div>
+
+        </div>
+
+        <section class="section">
+            <h2>Support Tickets</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Requester</th>
+                            <th>Issue</th>
+                            <th>Category</th>
+                            <th>Date Submitted</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for ticket in tickets %}
+
+                        <tr>
+                            <td>{{ ticket.ticket_id }}</td>
+
+                            <td>{{ ticket.requester_name }}</td>
+
+                            <td>{{ ticket.title }}</td>
+
+                            <td>{{ ticket.category }}</td>
+
+                            <td>{{ ticket.created_at }}</td>
+
+                            <td>{{ ticket.status }}</td>
+
+                            <td>
+                                <form method="POST"
+                                    action="{{ url_for('main.update_ticket_status', ticket_id=ticket.ticket_id) }}">
+
+                                    <select name="status" required>
+                                        <option value="Pending" {% if ticket.status=='Pending' %}selected{% endif %}>
+                                            Pending
+                                        </option>
+
+                                        <option value="In Progress" {% if ticket.status=='In Progress' %}selected{%
+                                            endif %}>
+                                            In Progress
+                                        </option>
+
+                                        <option value="Resolved" {% if ticket.status=='Resolved' %}selected{% endif %}>
+                                            Resolved
+                                        </option>
+
+                                        <option value="Closed" {% if ticket.status=='Closed' %}selected{% endif %}>
+                                            Closed
+                                        </option>
+                                    </select>
+
+                                    <button type="submit">Update</button>
+
+                                </form>
+                            </td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="7" class="empty">
+                                No support tickets available.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+
+</html>

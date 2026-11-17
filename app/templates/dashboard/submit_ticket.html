@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Submit a Ticket | Secure Campus HelpDesk</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+
+            <h2>Secure Campus HelpDesk</h2>
+            <p class="sidebar-subtitle">Student Portal</p>
+
+            <nav>
+                <a href="{{ url_for('main.home') }}">Dashboard</a>
+
+                <a href="{{ url_for('main.my_tickets') }}">My Tickets</a>
+
+                <a href="{{ url_for('main.submit_ticket') }}" class="active">Submit a Ticket</a>
+            </nav>
+
+            <a href="{{ url_for('main.logout') }}" class="logout-link">Logout</a>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+
+            <header class="dashboard-header">
+
+                <div>
+                    <h1>Create Support Ticket</h1>
+
+                    <p>
+                        Submit your technical issue and our IT support
+                        team will assist you.
+                    </p>
+                </div>
+
+                <div class="user-profile">
+                    {{ session['user_name'] }}
+                </div>
+
+            </header>
+
+            <!-- Page Introduction -->
+            <section class="ticket-intro">
+
+                <div>
+                    <span class="ticket-label">IT SUPPORT CENTRE</span>
+
+                    <h2>How can we help you today?</h2>
+
+                    <p>
+                        Provide accurate information about your issue
+                        so our support team can resolve it efficiently.
+                    </p>
+                </div>
+
+                <div class="ticket-icon">IT</div>
+
+            </section>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="flash-message">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- Ticket Form -->
+            <section class="ticket-form-card">
+
+                <div class="form-card-heading">
+
+                    <h2>Ticket Information</h2>
+
+                    <p>Fields marked with * are required.</p>
+
+                </div>
+
+                <form method="POST" action="{{ url_for('main.submit_ticket') }}">
+
+                    <div class="form-group">
+
+                        <label for="title">Ticket Title *</label>
+
+                        <input type="text" id="title" name="title" placeholder="Briefly describe your issue"
+                            maxlength="150" required>
+
+                        <small>
+                            Example: Unable to connect to campus Wi-Fi
+                        </small>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="category">Problem Category *</label>
+
+                        <select id="category" name="category" required>
+
+                            <option value="">Choose a problem category</option>
+
+                            <option value="Network/Wi-Fi">
+                                Network / Wi-Fi
+                            </option>
+
+                            <option value="Computer/Hardware">
+                                Computer / Hardware
+                            </option>
+
+                            <option value="Software Installation">
+                                Software Installation
+                            </option>
+
+                            <option value="Student Portal">
+                                Student Portal
+                            </option>
+
+                            <option value="Password Reset">
+                                Password Reset
+                            </option>
+
+                            <option value="Printer/Scanner">
+                                Printer / Scanner
+                            </option>
+
+                            <option value="Email Access">
+                                Email Access
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="description">
+                            Problem Description *
+                        </label>
+
+                        <textarea id="description" name="description" rows="7"
+                            placeholder="Explain the problem, when it started and any error message you received..."
+                            required></textarea>
+
+                        <small>
+                            Please provide enough details to help our
+                            technicians understand your issue.
+                        </small>
+
+                    </div>
+
+                    <div class="form-note">
+
+                        <strong>Before submitting</strong>
+
+                        <p>
+                            Ensure that the information provided is
+                            accurate. Your ticket will be sent to the
+                            IT support team for review.
+                        </p>
+
+                    </div>
+
+                    <div class="form-actions">
+
+                        <a href="{{ url_for('main.home') }}" class="cancel-btn">
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="ticket-submit-btn">
+                            Submit Ticket
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+            <p class="ticket-footer">
+                Secure Campus HelpDesk · University IT Support
+            </p>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

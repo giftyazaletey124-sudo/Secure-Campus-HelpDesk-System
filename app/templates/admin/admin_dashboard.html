@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Secure Campus HelpDesk</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="brand">Secure<span>HelpDesk</span></div>
+            <p class="sidebar-subtitle">Administration Portal</p>
+
+            <div class="menu-title">Main Menu</div>
+
+            <a href="#overview">Overview</a>
+            <a href="#users">User Management</a>
+            <a href="#tickets">Ticket Monitoring</a>
+            <a href="#reports">Reports & Analytics</a>
+            <a href="#activity">Recent Activity</a>
+
+            <a href="{{ url_for('main.logout') }}" class="logout">
+                Logout
+            </a>
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <div>
+                    <h1>Administrator Dashboard</h1>
+                    <p>Monitor and manage the Secure Campus HelpDesk system.</p>
+                </div>
+
+                <div class="admin-badge">Administrator</div>
+            </header>
+
+            <!-- FLASH MESSAGES -->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- OVERVIEW -->
+            <section class="section" id="overview">
+
+                <h2 class="section-heading">System Overview</h2>
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <strong>{{ total_users|default(0) }}</strong>
+                        <p>Registered system users</p>
+                    </div>
+
+                    <div class="stat-card blue-card">
+                        <h3>Students</h3>
+                        <strong>{{ total_students|default(0) }}</strong>
+                        <p>Registered students</p>
+                    </div>
+
+                    <div class="stat-card orange-card">
+                        <h3>Technicians</h3>
+                        <strong>{{ total_technicians|default(0) }}</strong>
+                        <p>IT support technicians</p>
+                    </div>
+
+                    <div class="stat-card purple-card">
+                        <h3>Total Tickets</h3>
+                        <strong>{{ total_tickets|default(0) }}</strong>
+                        <p>All submitted tickets</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- USER MANAGEMENT -->
+            <section class="section" id="users">
+
+                <h2 class="section-heading">User Management</h2>
+
+                <div class="panel">
+
+                    <div class="panel-heading">
+                        <h3>Registered Users</h3>
+
+                        <input type="text" id="userSearch" class="search-input" placeholder="Search users...">
+                    </div>
+
+                    <div class="table-wrap">
+
+                        <table id="usersTable">
+
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email Address</th>
+                                    <th>Current Role</th>
+                                    <th>Change Role</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for user in users %}
+
+                                <tr>
+                                    <td>{{ user.user_id }}</td>
+                                    <td>{{ user.full_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.role|capitalize }}</td>
+
+                                    <td>
+
+                                        {% if user.role != 'admin' %}
+
+                                        <form method="POST"
+                                            action="{{ url_for('main.change_user_role', user_id=user.user_id) }}"
+                                            class="role-form">
+
+                                            <select name="role" required>
+
+                                                <option value="student" {% if user.role=='student' %}selected{% endif
+                                                    %}>
+                                                    Student
+                                                </option>
+
+                                                <option value="staff" {% if user.role=='staff' %}selected{% endif %}>
+                                                    Staff
+                                                </option>
+
+                                                <option value="technician" {% if user.role=='technician' %}selected{%
+                                                    endif %}>
+                                                    Technician
+                                                </option>
+
+                                            </select>
+
+                                            <button type="submit">Update</button>
+
+                                        </form>
+
+                                        {% else %}
+
+                                        <span class="status status-closed">
+                                            Protected
+                                        </span>
+
+                                        {% endif %}
+
+                                    </td>
+                                </tr>
+
+                                {% else %}
+
+                                <tr>
+                                    <td colspan="5" class="empty-message">
+                                        No registered users found.
+                                    </td>
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- TICKET MONITORING -->
+            <section class="section" id="tickets">
+
+                <h2 class="section-heading">Ticket Monitoring</h2>
+
+                <div class="panel">
+
+                    <div class="panel-heading">
+
+                        <h3>Support Tickets</h3>
+
+                        <form method="GET" action="{{ url_for('main.admin_dashboard') }}" class="filter-form">
+
+                            <select name="status">
+
+                                <option value="All" {% if selected_status=='All' %}selected{% endif %}>
+                                    All Tickets
+                                </option>
+
+                                <option value="Pending" {% if selected_status=='Pending' %}selected{% endif %}>
+                                    Pending
+                                </option>
+
+                                <option value="In Progress" {% if selected_status=='In Progress' %}selected{% endif %}>
+                                    In Progress
+                                </option>
+
+                                <option value="Resolved" {% if selected_status=='Resolved' %}selected{% endif %}>
+                                    Resolved
+                                </option>
+
+                                <option value="Closed" {% if selected_status=='Closed' %}selected{% endif %}>
+                                    Closed
+                                </option>
+
+                            </select>
+
+                            <button type="submit">Filter</button>
+
+                        </form>
+
+                    </div>
+
+                    <div class="table-wrap">
+
+                        <table id="ticketsTable">
+
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Requester</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Technician</th>
+                                    <th>Date Submitted</th>
+                                    <th>Status</th>
+                                    <th>Assign Technician</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for ticket in tickets %}
+
+                                <tr>
+
+                                    <td>#{{ ticket.ticket_id }}</td>
+
+                                    <td>
+                                        {{ ticket.requester_name or 'Unknown' }}
+                                    </td>
+
+                                    <td>{{ ticket.title }}</td>
+
+                                    <td>{{ ticket.category }}</td>
+
+                                    <td>
+                                        {{ ticket.technician_name or 'Unassigned' }}
+                                    </td>
+
+                                    <td>{{ ticket.created_at }}</td>
+
+                                    <td>
+
+                                        <span class="status
+                                            {% if ticket.status == 'Pending' %}
+                                                status-pending
+                                            {% elif ticket.status == 'In Progress' %}
+                                                status-in-progress
+                                            {% elif ticket.status == 'Resolved' %}
+                                                status-resolved
+                                            {% else %}
+                                                status-closed
+                                            {% endif %}">
+
+                                            {{ ticket.status }}
+
+                                        </span>
+
+                                    </td>
+
+                                    <!-- TECHNICIAN ASSIGNMENT -->
+                                    <td>
+
+                                        <form method="POST"
+                                            action="{{ url_for('main.assign_ticket', ticket_id=ticket.ticket_id) }}"
+                                            class="assignment-form">
+
+                                            <select name="technician_id" required>
+
+                                                <option value="">
+                                                    Select Technician
+                                                </option>
+
+                                                {% for technician in technicians %}
+
+                                                <option value="{{ technician.user_id }}" {% if
+                                                    ticket.assigned_to==technician.user_id %}selected{% endif %}>
+
+                                                    {{ technician.full_name }}
+
+                                                </option>
+
+                                                {% endfor %}
+
+                                            </select>
+
+                                            <button type="submit" class="btn-primary">
+                                                Assign
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+
+                                {% else %}
+
+                                <tr>
+                                    <td colspan="8" class="empty-message">
+                                        No tickets found.
+                                    </td>
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- REPORTS -->
+            <section class="section" id="reports">
+
+                <h2 class="section-heading">Reports & Analytics</h2>
+
+                <div class="panel">
+
+                    <div class="panel-heading">
+                        <h3>Ticket Performance</h3>
+                    </div>
+
+                    <div class="report-row">
+
+                        <div class="report-label">
+                            <span>Pending</span>
+                            <strong>{{ pending_count|default(0) }}</strong>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill pending-fill"
+                                data-width="{{ ((pending_count|default(0) / total_tickets * 100) if total_tickets else 0)|round(1) }}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="report-row">
+
+                        <div class="report-label">
+                            <span>In Progress</span>
+                            <strong>{{ in_progress_count|default(0) }}</strong>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill blue-fill"
+                                data-width="{{ ((in_progress_count|default(0) / total_tickets * 100) if total_tickets else 0)|round(1) }}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="report-row">
+
+                        <div class="report-label">
+                            <span>Resolved</span>
+                            <strong>{{ resolved_count|default(0) }}</strong>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill resolved-fill"
+                                data-width="{{ ((resolved_count|default(0) / total_tickets * 100) if total_tickets else 0)|round(1) }}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="report-row">
+
+                        <div class="report-label">
+                            <span>Closed</span>
+                            <strong>{{ closed_count|default(0) }}</strong>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill closed-fill"
+                                data-width="{{ ((closed_count|default(0) / total_tickets * 100) if total_tickets else 0)|round(1) }}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="resolution-box">
+
+                        <h3>Ticket Resolution Rate</h3>
+
+                        <strong>
+                            {{ (((resolved_count|default(0) + closed_count|default(0)) / total_tickets * 100) if
+                            total_tickets else 0)|round(1) }}%
+                        </strong>
+
+                        <p>
+                            Percentage of tickets resolved or closed.
+                        </p>
+
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- RECENT ACTIVITY -->
+            <section class="section" id="activity">
+
+                <h2 class="section-heading">Recent Activity</h2>
+
+                <div class="panel">
+
+                    <div class="panel-heading">
+                        <h3>Latest Support Tickets</h3>
+                    </div>
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Requester</th>
+                                    <th>Issue</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for ticket in tickets[:5] %}
+
+                                <tr>
+                                    <td>#{{ ticket.ticket_id }}</td>
+                                    <td>{{ ticket.requester_name or 'Unknown' }}</td>
+                                    <td>{{ ticket.title }}</td>
+                                    <td>{{ ticket.status }}</td>
+                                    <td>{{ ticket.created_at }}</td>
+                                </tr>
+
+                                {% else %}
+
+                                <tr>
+                                    <td colspan="5" class="empty-message">
+                                        No recent activity available.
+                                    </td>
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="dashboard-footer">
+                Secure Campus HelpDesk System &copy; 2026
+            </footer>
+
+        </main>
+
+    </div>
+
+    <script>
+
+        // USER SEARCH
+        const userSearch = document.getElementById('userSearch');
+
+        userSearch.addEventListener('keyup', function () {
+
+            const searchValue = this.value.toLowerCase();
+
+            const rows = document.querySelectorAll('#usersTable tbody tr');
+
+            rows.forEach(function (row) {
+
+                const rowText = row.innerText.toLowerCase();
+
+                row.style.display =
+                    rowText.includes(searchValue) ? '' : 'none';
+
+            });
+
+        });
+
+
+        // PROGRESS BARS
+        document.querySelectorAll('.progress-fill').forEach(function (bar) {
+
+            const width = parseFloat(bar.dataset.width) || 0;
+
+            bar.style.width =
+                Math.min(100, Math.max(0, width)) + '%';
+
+        });
+
+    </script>
+
+</body>
+
+</html>passwordpass

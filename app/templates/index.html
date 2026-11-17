@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Secure Campus HelpDesk</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Campus HelpDesk</div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="#services">Services</a>
+            <a href="#about">About</a>
+            <a href="/login" class="login-btn">Login</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <p class="welcome">UNIVERSITY IT SUPPORT PORTAL</p>
+
+            <h1>
+                Technology Problems?
+                <span>We've Got You Covered.</span>
+            </h1>
+
+            <p class="description">
+                A secure and reliable platform for reporting,
+                tracking and resolving university IT-related problems.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/register" class="primary-btn">
+                    Submit a Ticket
+                </a>
+
+                <a href="/login" class="secondary-btn">
+                    Track My Ticket
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="services" id="services">
+
+        <h2>Our Support Services</h2>
+
+        <p>Get assistance with your university technology needs.</p>
+
+        <div class="service-container">
+
+            <div class="service-card">
+                <h3>Network Support</h3>
+                <p>Report Wi-Fi and internet connectivity problems.</p>
+            </div>
+
+            <div class="service-card">
+                <h3>Hardware Support</h3>
+                <p>Get assistance with computers and other devices.</p>
+            </div>
+
+            <div class="service-card">
+                <h3>Software Support</h3>
+                <p>Report software installation and application issues.</p>
+            </div>
+
+            <div class="service-card">
+                <h3>Account Support</h3>
+                <p>Get help with passwords, email and portal access.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer id="about">
+        <p>Secure Campus HelpDesk System</p>
+        <p>Connecting the university community to reliable IT support.</p>
+    </footer>
+
+</body>
+
+</html>

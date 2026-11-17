@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Dashboard | Secure Campus HelpDesk</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+
+            <h2>Secure Campus HelpDesk</h2>
+            <p class="sidebar-subtitle">Student Portal</p>
+
+            <nav>
+                <a href="#overview" class="active">Dashboard</a>
+                <a href="{{ url_for('main.my_tickets') }}">My Tickets</a>
+                <a href="{{ url_for('main.submit_ticket') }}">Submit a Ticket</a>
+                <a href="#support">Support Centre</a>
+            </nav>
+
+            <a href="{{ url_for('main.logout') }}" class="logout-link">Logout</a>
+
+        </aside>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-main">
+
+            <header class="dashboard-header">
+
+                <div>
+                    <h1>Student Dashboard</h1>
+                    <p>Welcome to your university IT support portal.</p>
+                </div>
+
+                <div class="user-profile">
+                    {{ session['user_name'] }}
+                </div>
+
+            </header>
+
+            <!-- Welcome Section -->
+            <section class="welcome-section" id="overview">
+
+                <h2>Welcome back, {{ session['user_name'] }}!</h2>
+
+                <p>
+                    Manage your IT support requests and keep track
+                    of their progress from your dashboard.
+                </p>
+
+                <br>
+
+                <a href="{{ url_for('main.submit_ticket') }}" class="primary-btn">
+                    + Submit a Ticket
+                </a>
+
+            </section>
+
+            <!-- Dynamic Statistics -->
+            <section class="dashboard-cards">
+
+                <div class="dashboard-card">
+                    <h3>Total Tickets</h3>
+                    <p>{{ total_tickets }}</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>Pending Tickets</h3>
+                    <p>{{ pending_tickets }}</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>Resolved Tickets</h3>
+                    <p>{{ resolved_tickets }}</p>
+                </div>
+
+            </section>
+
+            <!-- Recent Tickets -->
+            <section class="tickets-section" id="my-tickets">
+
+                <div class="form-card-heading">
+
+                    <h2>My Recent Tickets</h2>
+
+                    <p>Your five most recently submitted requests.</p>
+
+                </div>
+
+                {% if recent_tickets %}
+
+                <div class="ticket-list">
+
+                    {% for ticket in recent_tickets %}
+
+                    <div class="ticket-item">
+
+                        <div class="ticket-item-header">
+
+                            <div>
+                                <h3>{{ ticket['title'] }}</h3>
+
+                                <p>
+                                    Ticket #{{ ticket['ticket_id'] }}
+                                </p>
+                            </div>
+
+                            <span class="ticket-status
+                                        {{ ticket['status']|lower|replace(' ', '-') }}">
+                                {{ ticket['status'] }}
+                            </span>
+
+                        </div>
+
+                        <div class="ticket-details">
+
+                            <p>
+                                <strong>Category:</strong>
+                                {{ ticket['category'] }}
+                            </p>
+
+                            <p>
+                                <strong>Submitted:</strong>
+                                {{ ticket['created_at'] }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <br>
+
+                <a href="{{ url_for('main.my_tickets') }}" class="primary-btn">
+                    View All Tickets
+                </a>
+
+                {% else %}
+
+                <div class="empty-state">
+
+                    <h3>No Tickets Yet</h3>
+
+                    <p>
+                        You haven't submitted any support requests.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </section>
+
+            <!-- Support Centre -->
+            <section class="support-section" id="support">
+
+                <h2>Need Technical Assistance?</h2>
+
+                <p>
+                    Get help with network issues, hardware,
+                    software installation, email and student portal access.
+                </p>
+
+                <br>
+
+                <a href="{{ url_for('main.submit_ticket') }}" class="primary-btn">
+                    Get IT Support
+                </a>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Tickets | Secure Campus HelpDesk</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+
+            <h2>Secure Campus HelpDesk</h2>
+
+            <p class="sidebar-subtitle">Student Portal</p>
+
+            <nav>
+                <a href="{{ url_for('main.home') }}">Dashboard</a>
+
+                <a href="{{ url_for('main.my_tickets') }}" class="active">My Tickets</a>
+
+                <a href="{{ url_for('main.submit_ticket') }}">
+                    Submit a Ticket
+                </a>
+            </nav>
+
+            <a href="{{ url_for('main.logout') }}" class="logout-link">Logout</a>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+
+            <header class="dashboard-header">
+
+                <div>
+                    <h1>My Support Tickets</h1>
+
+                    <p>
+                        View and track all your submitted IT support requests.
+                    </p>
+                </div>
+
+                <div class="user-profile">
+                    {{ session['user_name'] }}
+                </div>
+
+            </header>
+
+            <!-- Page Introduction -->
+            <section class="welcome-section">
+
+                <h2>Track Your Requests</h2>
+
+                <p>
+                    Below is a record of your support requests and
+                    their current progress.
+                </p>
+
+            </section>
+
+            <!-- Ticket List -->
+            <section class="tickets-section">
+
+                <div class="form-card-heading">
+
+                    <h2>Submitted Tickets</h2>
+
+                    <p>
+                        Total tickets: {{ tickets|length }}
+                    </p>
+
+                </div>
+
+                {% if tickets %}
+
+                <div class="ticket-list">
+
+                    {% for ticket in tickets %}
+
+                    <div class="ticket-item">
+
+                        <div class="ticket-item-header">
+
+                            <div>
+                                <h3>{{ ticket['title'] }}</h3>
+
+                                <p>
+                                    Ticket #{{ ticket['ticket_id'] }}
+                                </p>
+                            </div>
+
+                            <span class="ticket-status
+                                        {{ ticket['status']|lower|replace(' ', '-') }}">
+                                {{ ticket['status'] }}
+                            </span>
+
+                        </div>
+
+                        <div class="ticket-details">
+
+                            <p>
+                                <strong>Category:</strong>
+                                {{ ticket['category'] }}
+                            </p>
+
+                            <p>
+                                <strong>Submitted:</strong>
+                                {{ ticket['created_at'] }}
+                            </p>
+
+                            <p>
+                                <strong>Description:</strong>
+                                {{ ticket['description'] }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-state">
+
+                    <h3>No Support Tickets Found</h3>
+
+                    <p>
+                        You haven't submitted any support requests yet.
+                    </p>
+
+                    <br>
+
+                    <a href="{{ url_for('main.submit_ticket') }}" class="primary-btn">
+                        Submit Your First Ticket
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
